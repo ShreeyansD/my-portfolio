@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  background-color: #0A0B10;
+  color: #C9D1D9;
+  font-family: 'JetBrains Mono', monospace, sans-serif;
+}
+
+/* 1. Scrolling Marquee */
+@keyframes marqueeSync {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-marquee, [class*="animate-marquee"] {
+  display: flex !important;
+  width: max-content !important;
+  animation: marqueeSync 15s linear infinite !important;
+  will-change: transform;
+}
+
+/* 2. Blinking Terminal Dots & Cursors */
+@keyframes cursorBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.animate-blink, [class*="animate-pulse"], .animate-ping {
+  animation: cursorBlink 1s infinite !important;
+}
+
+/* Force hardware acceleration for smooth motion */
+* {
+  -webkit-font-smoothing: antialiased;
+}
