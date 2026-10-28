@@ -2,7 +2,7 @@ export const owner = {
   name: "Shreeyans Dodda",
   handle: "shreeyans",
   host: "dev",
-  role: "CS Student & Software Developer",
+  role: "CS Student",
   university: "Purdue University",
   major: "B.S. Computer Science",
   year: "Junior standing",

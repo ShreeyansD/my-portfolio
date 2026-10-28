@@ -52,7 +52,7 @@ export const Ask = ({ entry }) => {
 
   return (
     <div data-testid="ask-output" className="max-w-3xl rounded-lg border border-[#C084FC]/30 bg-[#C084FC]/[0.04] p-4">
-      <p className="mb-2 flex items-center gap-2 text-xs text-[#C084FC]"><Sparkles className="h-3.5 w-3.5" /> shrsh-ai {status === "thinking" && <span className="text-[#8B949E]">thinking<span className="dots" /></span>}</p>
+      <p className="mb-2 flex items-center gap-2 text-xs text-[#C084FC]"><Sparkles className="h-3.5 w-3.5" /> shrsh-ai <span className="text-[#6E7681]">· AI replying as Shreeyans</span> {status === "thinking" && <span className="text-[#8B949E]">thinking<span className="dots" /></span>}</p>
       {status === "error"
         ? <p data-testid="ask-error" className="text-[#F87171]">ai offline right now — try 'contact' instead.</p>
         : <p data-testid="ask-response" className="whitespace-pre-wrap leading-relaxed text-[#C9D1D9]">{text}{status !== "done" && status !== "cut" && <span className="tw-caret">▋</span>}{status === "cut" && <span className="block pt-2 text-xs text-[#FBBF24]">⚠ connection dropped mid-answer — ask again.</span>}</p>}
