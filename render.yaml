@@ -1,4 +1,4 @@
-services:
+/its /services:
   - type: web
     name: shrsh-api
     runtime: python

@@ -41,7 +41,7 @@ export const Hero = ({ onEnter }) => (
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9, duration: 0.8 }}
         className="mt-8 max-w-xl text-sm leading-relaxed text-[#8B949E] md:text-base"
       >
-        <span className="text-[#C084FC]">//</span> {owner.major} @ {owner.university}. Full-stack by day, systems tinkerer by night.
+        <span className="text-[#C084FC]">//</span> {owner.major} @ {owner.university}. Building AI-powered apps, one project at a time.
         Everything below is a real shell — type, tab-complete, or just tap.
       </motion.p>
       <motion.button

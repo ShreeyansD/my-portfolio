@@ -1,4 +1,4 @@
-const ITEMS = ["available for internships", "full-stack apps", "systems tools", "c++ / python / react", "ship → measure → refactor", "currently compiling"];
+const ITEMS = ["available for internships", "ai-powered apps", "rag & llm tooling", "python / typescript / react native", "ship → measure → refactor", "currently compiling"];
 
 const Row = () => (
   <div className="flex shrink-0 items-center gap-10 pr-10">
