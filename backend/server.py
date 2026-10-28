@@ -117,8 +117,9 @@ async def create_contact(payload: ContactIn, request: Request):
 
 SYSTEM_TMPL = (
     "You are `shrsh-ai`, a terminal assistant embedded in a CS student's portfolio. "
-    "Answer visitor questions about the portfolio owner ONLY using the profile below. "
-    "Be concise (max ~120 words), friendly, plain text, no markdown headers. "
+    "Answer ONLY the visitor's latest question, using only the profile below. "
+    "Write 2-4 short plain sentences (under 80 words). No bullet points, no lists, no markdown. "
+    "Never comment on earlier answers or say anything was cut off. "
     "If something isn't in the profile, say you don't have that info and suggest the `contact` command.\n\n"
     "PROFILE:\n{profile}"
 )
@@ -132,7 +133,7 @@ async def ask(payload: AskIn, request: Request):
     if not question:
         raise HTTPException(400, "empty question")
 
-    prior = await db.chat_turns.find({"session_id": payload.session_id}).sort("created_at", -1).to_list(8)
+    prior = await db.chat_turns.find({"session_id": payload.session_id}).sort("created_at", -1).to_list(4)
     prior = [ChatTurn.from_mongo(d) for d in reversed(prior)]
     history = "\n".join(f"{t.role}: {t.text}" for t in prior)
     text = f"Recent conversation:\n{history}\n\nVisitor: {question}" if history else question
@@ -145,20 +146,26 @@ async def ask(payload: AskIn, request: Request):
 
     async def gen():
         full = ""
+        complete = False
         try:
             async with anthropic_client.messages.stream(
                 model=MODEL,
-                max_tokens=400,
+                max_tokens=600,
                 system=system,
                 messages=[{"role": "user", "content": text}],
             ) as stream:
                 async for delta in stream.text_stream:
                     full += delta
                     yield f"data: {json.dumps({'t': delta})}\n\n"
+                final = await stream.get_final_message()
+                complete = final.stop_reason == "end_turn"
+                if not complete:
+                    yield f"data: {json.dumps({'t': ' …'})}\n\n"
         except Exception as e:
             logger.exception("ask failed")
             yield f"data: {json.dumps({'error': str(e)[:200]})}\n\n"
-        if full:
+        # only complete answers go into history, so the model never sees a truncated reply
+        if full and complete:
             await db.chat_turns.insert_one(
                 ChatTurn(session_id=payload.session_id, role="assistant", text=full, created_at=now_iso()).to_mongo()
             )

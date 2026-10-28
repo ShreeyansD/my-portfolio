@@ -28,12 +28,13 @@ async function streamAsk(question, onText) {
     buf = parts.pop();
     for (const p of parts) {
       const data = p.replace(/^data: /, "");
-      if (data === "[DONE]") return;
+      if (data === "[DONE]") return true;
       const j = JSON.parse(data);
       if (j.error) throw new Error(j.error);
       if (j.t) onText(j.t);
     }
   }
+  return false; // stream closed without [DONE]: connection dropped mid-answer
 }
 
 export const Ask = ({ entry }) => {
@@ -45,7 +46,7 @@ export const Ask = ({ entry }) => {
     if (started.current) return;
     started.current = true;
     streamAsk(entry.arg, (t) => { setStatus("streaming"); setText((x) => x + t); })
-      .then(() => setStatus("done"))
+      .then((ok) => setStatus(ok ? "done" : "cut"))
       .catch(() => setStatus("error"));
   }, [entry.arg]);
 
@@ -54,7 +55,7 @@ export const Ask = ({ entry }) => {
       <p className="mb-2 flex items-center gap-2 text-xs text-[#C084FC]"><Sparkles className="h-3.5 w-3.5" /> shrsh-ai {status === "thinking" && <span className="text-[#8B949E]">thinking<span className="dots" /></span>}</p>
       {status === "error"
         ? <p data-testid="ask-error" className="text-[#F87171]">ai offline right now — try 'contact' instead.</p>
-        : <p data-testid="ask-response" className="whitespace-pre-wrap leading-relaxed text-[#C9D1D9]">{text}{status !== "done" && <span className="tw-caret">▋</span>}</p>}
+        : <p data-testid="ask-response" className="whitespace-pre-wrap leading-relaxed text-[#C9D1D9]">{text}{status !== "done" && status !== "cut" && <span className="tw-caret">▋</span>}{status === "cut" && <span className="block pt-2 text-xs text-[#FBBF24]">⚠ connection dropped mid-answer — ask again.</span>}</p>}
     </div>
   );
 };
